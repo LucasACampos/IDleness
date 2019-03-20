@@ -1,42 +1,36 @@
 package br.com.bandtec.projetopw.controller;
 
-import static org.junit.Assert.assertEquals;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
-
-import org.junit.Before;
+import org.junit.Assert;
 import org.junit.Test;
+import org.mockito.Mockito;
 
 import br.com.bandtec.projetopw.infra.SegurancaDaAplicacao;
 
 public class LoginControllerTest {
 	
-	Credenciais credenciais = new Credenciais("login", "senha");
-	
-	private SegurancaDaAplicacao seguranca;
 	private LoginController controller;
-	
-	@Before
-	public void inicializar() {
-		seguranca = mock(SegurancaDaAplicacao.class);
-		controller = new LoginController(seguranca);
-	}
 	
 	@Test
 	public void aoDigitarLoginESenhaValidosAbrirTelaPrincipal() {
-		when(seguranca.permitirAcesso(credenciais)).thenReturn(true);
-	
+		Credenciais credenciais = new Credenciais("login", "senha");
+		SegurancaDaAplicacao seguranca = Mockito.mock(SegurancaDaAplicacao.class);
+		Mockito.when(seguranca.permitirAcesso(credenciais)).thenReturn(true);
+		controller = new LoginController(seguranca);
+		
 		String telaPrincipal = controller.efetuarLogin(credenciais);
 		
-		assertEquals(LoginController.PAGINA_PRINCIPAL, telaPrincipal);
+		Assert.assertEquals("paginaPrincipal", telaPrincipal);
 	}
 	
 	@Test
 	public void aoDigitarLoginEOuSenhaErradosExibirPaginaDeErro() {
-		when(seguranca.permitirAcesso(credenciais)).thenReturn(false);
+		Credenciais credenciais = new Credenciais("login", "senha");
+		SegurancaDaAplicacao seguranca = Mockito.mock(SegurancaDaAplicacao.class);
+		Mockito.when(seguranca.permitirAcesso(credenciais)).thenReturn(false);
+		controller = new LoginController(seguranca);
 		
 		String paginaDeErro = controller.efetuarLogin(credenciais);
 		
-		assertEquals(LoginController.PAGINA_DE_ERRO, paginaDeErro);
+		Assert.assertEquals("paginaDeErro", paginaDeErro);
 	}
 }

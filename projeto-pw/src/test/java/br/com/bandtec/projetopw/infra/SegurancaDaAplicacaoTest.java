@@ -1,8 +1,6 @@
 package br.com.bandtec.projetopw.infra;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -10,53 +8,38 @@ import org.junit.Test;
 import org.mockito.Mockito;
 
 import br.com.bandtec.projetopw.controller.Credenciais;
-import br.com.bandtec.projetopw.infra.repository.RepositorioUsuarios;
+import br.com.bandtec.projetopw.repository.TodosUsuarios;
 
 public class SegurancaDaAplicacaoTest {
-	
+
 	private SegurancaDaAplicacao seguranca;
-	private RepositorioUsuarios repositorioUsuarios;
-	
-	private Credenciais credenciaisIguais = new Credenciais("rodrigo", "rodrigo");
-	private Credenciais credenciaisDiferentes = new Credenciais("rodrigo", "vieira");
-	private Credenciais credencialNula = new Credenciais(null, null);
+	private TodosUsuarios todosUsuarios;
+	private Credenciais credenciais;
 	
 	@Before
-	public void setUp() {
-		repositorioUsuarios = mock(RepositorioUsuarios.class);
-		seguranca = new SegurancaDaAplicacao(repositorioUsuarios);
+	public void setup() {
+		credenciais = new Credenciais("rodrigo", "rodrigo");
+		todosUsuarios = Mockito.mock(TodosUsuarios.class);
+		seguranca = new SegurancaDaAplicacao(todosUsuarios);
 	}
 	
 	@Test
-	public void aoReceberCredenciaisIguaisRetornarTrue() {
-		assertTrue(seguranca.permitirAcesso(credenciaisIguais));
+	public void autorizarUsuario() {
+		when(todosUsuarios.contemUsuarioComEssas(credenciais)).thenReturn(true);
+		Assert.assertTrue(seguranca.permitirAcesso(credenciais));
 	}
 	
 	@Test
-	public void aoReceberCredenciaisDiferentesRetornarFalse() {
-		assertFalse(seguranca.permitirAcesso(credenciaisDiferentes));
+	public void naoAutorizarUsuarioPoisUsuarioNaoExiste() {
+		when(todosUsuarios.contemUsuarioComEssas(credenciais)).thenReturn(false);
+		Assert.assertFalse(seguranca.permitirAcesso(credenciais));
 	}
 	
 	@Test
-	public void aoReceberCredencialNulaRetornarFalse() {
-		assertFalse(seguranca.permitirAcesso(credencialNula));
-	}
-	
-	@Test
-	public void seUsuarioNoBancoECredenciaisIguaisRetornarTrue() {
+	public void naoAutorizarUsuarioPoisLoginESenhaNaoConferem() {
+		credenciais = new Credenciais("login", "senha");
+		when(todosUsuarios.contemUsuarioComEssas(credenciais)).thenReturn(true);
 		
+		Assert.assertFalse(seguranca.permitirAcesso(credenciais));
 	}
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
 }
